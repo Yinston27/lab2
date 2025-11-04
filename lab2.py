@@ -1,6 +1,6 @@
 import csv
 import random
-
+import xml.etree.ElementTree as ET
 
 
 def element_length_greater(count, list_dict_reader):
@@ -33,6 +33,28 @@ def link_generator(count_book, list):
             results.write(return_list[i]+'\n')
 
 
+def parser():
+    tree = ET.parse('currency.xml')
+    root = tree.getroot()
+    list_dicts = []
+    f = 0
+    for elem in root.iter():
+        if elem.tag == 'Valute' or elem.tag == 'ValCurs':
+            f = 0
+            continue
+        if f == 0:
+            list_dicts.append({})
+            f = 1
+        list_dicts[-1][elem.tag] = elem.text
+    return_dict = {}
+    for dict in list_dicts:
+        return_dict[dict['Name']] = dict['CharCode']
+
+    # если понадобится вывод словаря
+    for i in return_dict:
+        print(i, return_dict[i])
+
+
 with open("books.csv") as books_file:
     books_reader = csv.DictReader(books_file, delimiter=";")
     books_list = [i for i in books_reader]  #список словарей, каждый словарь - строка исходной таблицы
@@ -40,5 +62,6 @@ with open("books.csv") as books_file:
     # element_length_greater(30, books_list)
     # search_book('Б. А. Воскресенский', books_list)
     # link_generator(20, books_list)
+    # parser()
 
 
